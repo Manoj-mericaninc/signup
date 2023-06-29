@@ -14,6 +14,7 @@ const signin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [val, setVal] = useState([]);
+  const [error, setError] = useState("");
   const auth = getAuth(app);
   const db = getFirestore(app);
   const value = collection(db, "signup");
@@ -21,7 +22,9 @@ const signin = () => {
   useEffect(() => {
     const getData = async () => {
       const querySnapshot = await getDocs(value);
-      setVal(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      await setVal(
+        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
       console.log(val);
     };
     getData();
@@ -59,7 +62,6 @@ const signin = () => {
               <form
                 className="mt-8 space-y-6"
                 action="#"
-                onClick={handleSubmit}
                 // onSubmit={handleSubmit}
               >
                 <label
@@ -118,7 +120,8 @@ const signin = () => {
                 </div>
                 <button
                   type="submit"
-                  className=" px-32 py-2 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full">
+                  className=" px-32 py-2 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 sm:w-auto dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-full"
+                  onClick={handleSubmit}>
                   Login
                 </button>
                 <div className="text-sm font-medium text-gray-900 dark:text-white">
