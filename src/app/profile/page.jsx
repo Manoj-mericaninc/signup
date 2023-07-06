@@ -11,8 +11,9 @@ import {
   deleteDoc,
   updateDoc,
 } from "firebase/firestore";
-import Navbar from "../Navbar/page";
+
 import withAuth from "../../../HOC/hoc";
+import Navbar from "../navbar/page";
 
 const Profile = () => {
   const [firstName, setFirstName] = useState("");
