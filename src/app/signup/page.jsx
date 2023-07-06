@@ -4,14 +4,15 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { fire } from "../firebase/firebase";
+import { db, fire } from "../firebase/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
-// import { appendMutableCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import app from "../firebase/firebase";
 
 const page = () => {
   const [inputs, setInputs] = useState([]);
+  const [email, setEmail] = useState();
+  const [password, setpassword] = useState();
   const router = useRouter();
 
   const auth = getAuth(app);
@@ -19,7 +20,7 @@ const page = () => {
   const handleChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
-    setInputs((values) => ({ ...values, [name]: value }));
+    setInputs((values) => ({ ...values, [name]: value, email: email }));
   };
 
   const handleSubmit = async (e) => {
@@ -27,7 +28,7 @@ const page = () => {
       e.preventDefault();
     }
     console.log(inputs);
-    await setDoc(doc(fire, "signup", Date.now().toString()), inputs);
+    await setDoc(doc(db, "login", Date.now().toString()), inputs);
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
@@ -41,6 +42,7 @@ const page = () => {
         const errorMessage = error.message;
         // ..
       });
+    router.push("/");
   };
 
   return (
@@ -61,7 +63,7 @@ const page = () => {
                     <div>
                       <input
                         type="firstName"
-                        name="text"
+                        name="firstName"
                         id="firstName"
                         onChange={handleChange}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 grid grid-rows-2"
@@ -71,8 +73,8 @@ const page = () => {
                     </div>
                     <div>
                       <input
-                        type="text"
-                        name="text"
+                        type="lastName"
+                        name="lastName"
                         id="lastName"
                         onChange={handleChange}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 px-5 dark:focus:border-blue-500"
@@ -84,8 +86,8 @@ const page = () => {
                   <div className="flex gap-2">
                     <div>
                       <input
-                        type="text"
-                        name="text"
+                        type="userName"
+                        name="userName"
                         id="userName"
                         onChange={handleChange}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -110,7 +112,7 @@ const page = () => {
                       type="email"
                       name="email"
                       id="email"
-                      onChange={handleChange}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Email Address*"
                       required
@@ -119,7 +121,7 @@ const page = () => {
                   <div>
                     <input
                       type="text"
-                      name="text"
+                      name="country"
                       id="text"
                       placeholder="Country*"
                       onChange={handleChange}
@@ -132,7 +134,7 @@ const page = () => {
                       type="password"
                       name="password"
                       id="password"
-                      onChange={handleChange}
+                      onChange={(e) => setpassword(e.target.value)}
                       placeholder="Password*"
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       required

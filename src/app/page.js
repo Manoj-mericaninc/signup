@@ -6,25 +6,22 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
 import { app } from "./firebase/firebase";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const signin = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [val, setVal] = useState([]);
-  const [error, setError] = useState("");
   const auth = getAuth(app);
   const db = getFirestore(app);
-  const value = collection(db, "signup");
+  const value = collection(db, "login");
 
   useEffect(() => {
     const getData = async () => {
       const querySnapshot = await getDocs(value);
-      await setVal(
-        querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-      );
+      setVal(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       console.log(val);
     };
     getData();
@@ -33,21 +30,46 @@ const signin = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("hello");
-    console.log(val);
-    val.forEach((value) => {
-      if (value.email === email && value.password === password) {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user);
         router.push("/profile");
-        console.log(value);
-        console.log(email);
-        console.log(password);
-      } else {
-        router.push("/");
-        console.log(value);
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+    console.log(val);
 
-        console.log(email);
-        console.log(password);
-      }
-    });
+    // val.forEach((value) => {
+    //   // console.log(authenticate(email, password));
+    //   if (value.email === email && value.password === password) {
+    //     console.log(value);
+    //     console.log(value.email);
+    //     console.log(value.password);
+
+    //     console.log(email);
+    //     console.log(password);
+    //     // console.log(authenticate(email, password));
+    //     // localStorage.setItem("user", JSON.stringify({ email }));
+    //     // router.push("/");
+    //     // if (authenticate(email, password)) {
+    //     //   return
+    //     // } else {
+    //     //   // handle login error
+    //     //   console.log(value.email);
+    //     //   console.log(value);
+    //     //   console.log(email);
+    //     //   console.log(password);
+    //     //   return router.push("/signin");
+    //     // }
+    //   } else {
+    //     console.log("signed in failed");
+    //   }
+    // });
   };
 
   return (
@@ -59,11 +81,7 @@ const signin = () => {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex justify-center">
                 Sign in
               </h2>
-              <form
-                className="mt-8 space-y-6"
-                action="#"
-                // onSubmit={handleSubmit}
-              >
+              <form className="mt-8 space-y-6" action="#">
                 <label
                   for="email"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
